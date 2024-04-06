@@ -134,6 +134,26 @@ const getAllClass = async (req, res) => {
       });
     });
 };
+const getOneClass = async (req, res) => {
+
+  const classId=req.query.classId;
+  const response = await classSchema
+    .find({_id:classId})
+    .populate({ path: "userId", select: ["name", "email"] })
+    .then((classs) => {
+      res.status(201).json({
+        status: true,
+        message: "success",
+        data: classs,
+      });
+    })
+    .catch((e) => {
+      res.status(422).json({
+        status: false,
+        message: "error getting classes for teacher",
+      });
+    });
+};
 
 module.exports = {
   createClass,
@@ -141,4 +161,5 @@ module.exports = {
   getAllClass,
   deleteClass,
   toggleClass,
+  getOneClass
 };
