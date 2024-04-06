@@ -4,7 +4,6 @@ const dotenv = require("dotenv");
 dotenv.config();
 const jwt = require("jsonwebtoken");
 const { validateEmail } = require("../utilities/Validations");
-
 const generateToken = (data, exp) => {
   if (!exp) {
     exp = Date.now() / 1000 + 24 * 60 * 60; //valid for 1day
@@ -32,8 +31,8 @@ const decodeToken = async (token) => {
 
 const generateNewAccessToken = async (req, res) => {
   // refresh token validation
-  const {refreshToken} = req.body;
-  console.log(refreshToken)
+  const { refreshToken } = req.body;
+  console.log(refreshToken);
   if (!refreshToken) {
     res.status(400).json({
       status: false,
@@ -42,11 +41,11 @@ const generateNewAccessToken = async (req, res) => {
 
     return;
   }
-  
+
   const user = await userSchema.findOne({
-      "tokens.refreshToken.token": refreshToken,
-    })
-    
+    "tokens.refreshToken.token": refreshToken,
+  });
+
   // user not exists
 
   if (!user) {
@@ -138,7 +137,6 @@ const signupUser = async (req, res) => {
   const rtokenExp = Date.now() / 1000 + 20 * 24 * 60 * 60;
   const rtoken = generateToken({ email, name }, rtokenExp);
 
-
   // saving new user
 
   const newUser = new userSchema({
@@ -146,14 +144,14 @@ const signupUser = async (req, res) => {
     email: email,
     password: hashedPassword,
     tokens: {
-      accessToken: { 
+      accessToken: {
         token: atoken,
-        expireAt: new Date(atokenExp * 1000) 
-        },
+        expireAt: new Date(atokenExp * 1000),
+      },
       refreshToken: {
         token: rtoken,
-        expireAt: new Date(rtokenExp * 1000) 
-        },
+        expireAt: new Date(rtokenExp * 1000),
+      },
     },
   });
 
@@ -216,10 +214,38 @@ const loginUser = async (req, res) => {
   res.status(200).json({
     status: true,
     message: "user validated",
-    data:user
+    data: user,
   });
 
   return;
 };
 
-module.exports = { signupUser, loginUser, generateNewAccessToken };
+const addFavourite = async (req, res) => {
+  const user = req.user;
+  const classId = req.query.classId;
+  if (user.favourite.includes(classId)) {
+    return res
+      .status(400)
+      .json({ message: "Class already exists in favorites" });
+  }
+  user.favourite.push(classId);
+  await user
+    .save()
+    .then((classs) => {
+      console.log(classs);
+      return res.status(200).json({
+        status: true,
+        message: "fav added",
+        data: classs,
+      });
+    })
+    .catch((e) => {
+      return res.status(200).json({
+        status: false,
+        message: "fav not added",
+        data: e.message,
+      });
+    });
+};
+
+module.exports = { signupUser, loginUser, generateNewAccessToken , addFavourite};

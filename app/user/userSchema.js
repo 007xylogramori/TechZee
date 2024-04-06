@@ -10,10 +10,21 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    role:{
+      type:String,
+      default:"student",
+      require:true
+    },
     password: {
       type: String,
       require: true,
     },
+    favourite: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Classes",
+      },
+    ],
 
     tokens: {
       accessToken: {

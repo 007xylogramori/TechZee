@@ -1,6 +1,6 @@
 const express = require("express");
 const classSchema = require("./classSchema.js");
-
+const mongoose = require("mongoose");
 const createClass = async (req, res) => {
   const { name } = req.body;
 
@@ -101,7 +101,6 @@ const toggleClass = async (req, res) => {
 const getClassofTeacher = async (req, res) => {
   const response = await classSchema
     .find({ userId: req.user._id })
-    .populate({ path: "userId", select: ["name", "email"] })
     .then((classs) => {
       res.status(201).json({
         status: true,
