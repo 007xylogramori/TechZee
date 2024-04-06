@@ -93,7 +93,7 @@ const generateNewAccessToken = async (req, res) => {
 };
 
 const signupUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   // detail validation
 
@@ -143,6 +143,7 @@ const signupUser = async (req, res) => {
     name: name,
     email: email,
     password: hashedPassword,
+    role: role,
     tokens: {
       accessToken: {
         token: atoken,
@@ -248,4 +249,4 @@ const addFavourite = async (req, res) => {
     });
 };
 
-module.exports = { signupUser, loginUser, generateNewAccessToken , addFavourite};
+module.exports = { signupUser, loginUser, generateNewAccessToken, addFavourite };
